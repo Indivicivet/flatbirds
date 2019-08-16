@@ -29,10 +29,17 @@ class Environment:
         for bird, vis in zip(self.birds, self.bird_visuals):
             vis.set_data(**bird.get_location())
 
-    def tick(self, time_step=TIME_STEP):
+    def _tick(self, time_step):
         for bird in self.birds:
             bird.tick(time_step=time_step, environment=self)
             bird.position = np.mod(bird.position, self.size)
+
+    def tick(self, time_step=TIME_STEP):
+        MAX_STEP = 0.5
+        while time_step > MAX_STEP:
+            self._tick(MAX_STEP)
+            time_step -= MAX_STEP
+        self._tick(time_step)
         self.rerender()
 
     def add_bird(self, bird):
@@ -124,6 +131,6 @@ if __name__ == "__main__":
         if time_stored > TIME_STEP:
             step_by = TIME_STEP * (time_stored // TIME_STEP)
             time_stored -= step_by
-            env.tick(PLAY_SPEED * step_by)
-        if "q" in input("press enter to update!"):
+            env.tick(PLAY_SPEED * step_by)  # this does stupid big ticks if in background
+        if "q" in input("press enter to update!"):n
             exit()
